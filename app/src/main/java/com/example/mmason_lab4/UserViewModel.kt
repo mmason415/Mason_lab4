@@ -24,10 +24,11 @@ class UserViewModel : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    // ✅ Custom client with timeout handling
+    //  Custom client with timeout handling
     private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
     private val userService = Retrofit.Builder()
@@ -44,17 +45,23 @@ class UserViewModel : ViewModel() {
     private fun fetchUsers() {
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                val result = userService.getUsers()
-                Log.d("UserViewModel", "Fetched ${result.results.size} users")
-                _users.value = result.results
-                _error.value = null
-            } catch (e: Exception) {
-                Log.e("UserViewModel", "Failed to fetch users", e)
-                _error.value = "Failed to fetch users: ${e.message}"
-            } finally {
-                _isLoading.value = false
+            var retries = 3
+
+            while (retries > 0) {
+                try {
+                    val result = userService.getUsers()
+                    _users.value = result.results
+                    _error.value = null
+                    break //  success, break out of retry loop
+                } catch (e: Exception) {
+                    retries--
+                    if (retries == 0) {
+                        _error.value = "Failed to fetch users: ${e.message}"
+                    }
+                }
             }
+            _isLoading.value = false
         }
     }
+
 }

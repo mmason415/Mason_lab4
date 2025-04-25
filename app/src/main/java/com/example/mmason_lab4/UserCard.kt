@@ -3,13 +3,9 @@ package com.example.mmason_lab4
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.mmason_lab4.model.User
@@ -27,7 +23,8 @@ fun UserCard(user: User) {
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 4.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF3EFFF)) // light purple background
     ) {
         Row(
             modifier = Modifier
@@ -39,8 +36,7 @@ fun UserCard(user: User) {
                 painter = rememberAsyncImagePainter(user.picture.large),
                 contentDescription = "${user.name.first} ${user.name.last}",
                 modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(50)),
+                    .size(56.dp), // square image (removed clip)
                 contentScale = ContentScale.Crop
             )
 
@@ -51,12 +47,12 @@ fun UserCard(user: User) {
                     text = "${user.name.first} ${user.name.last}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.White
+                    color = Color.Black
                 )
                 Text(
                     text = user.email,
                     fontSize = 14.sp,
-                    color = Color.LightGray
+                    color = Color.DarkGray
                 )
             }
         }
